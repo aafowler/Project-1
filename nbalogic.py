@@ -21,7 +21,7 @@ def get_players(df):
     Handles missing team or player data.
 
     Args:
-        df (pandas.DataFrame): DataFrame containing NBA player data.
+        df: DataFrame containing NBA player data.
 
     Returns:
         team_players: A dictionary connecting team names to lists of players on the team.
@@ -41,7 +41,7 @@ def get_stats(df, team, player):
     Gets the points, rebounds, and assists of selected player.
 
     Args:
-        df (pandas.DataFrame): DataFrame containing NBA player stats.
+        df: DataFrame containing NBA player stats.
         team (str): The name of the team.
         player (str): The name of the player.
 

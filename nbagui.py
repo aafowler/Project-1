@@ -1,11 +1,21 @@
-from nba import *
 import tkinter as tk
 from tkinter import ttk
+from nbalogic import get_data, get_players, get_stats
+import pandas as pd
 
 class NBAStatsGUI:
+    """
+        Initializes the NBAStatsGUI with necessary components.
+
+        Args:
+            master (tk.Tk): Is the window of the app.
+    """
     def __init__(self, master):
         self.master = master
-        self.df = pd.read_csv('nba_2025_stats.csv')
+        self.df = get_data()
+        self.team_players = get_players(self.df)
+        self.team_players_sorted = sorted(self.team_players.keys())
+
         self.header_title = ttk.Label(master, text='NBA STATS', font=('Arial', 16))
         self.header_title.grid(row=0, column=0, columnspan=3, pady=10, padx=45, sticky='nw')
 
@@ -13,9 +23,9 @@ class NBAStatsGUI:
         self.player_tag = tk.StringVar(master)
 
         self.team_name = ttk.Label(master, text='Team:')
-        self.team_name.grid(row=1, column=0, padx=5, pady=5, sticky = 'w')
+        self.team_name.grid(row=1, column=0, padx=5, pady=5, sticky='w')
 
-        self.team_dropdown = ttk.Combobox(master, textvariable=self.team_abv, values=list(team_players_sorted))
+        self.team_dropdown = ttk.Combobox(master, textvariable=self.team_abv, values=self.team_players_sorted)
         self.team_dropdown.grid(row=1, column=1, padx=5, pady=5, sticky='w')
         self.team_dropdown.bind('<<ComboboxSelected>>', self.update_player_dropdown)
 
@@ -29,7 +39,7 @@ class NBAStatsGUI:
         self.points_label = ttk.Label(master, text='PTS:')
         self.points_label.grid(row=3, column=1, padx=5, pady=5, sticky='w')
 
-        self.rebounds_label = ttk.Label(master, text='RBS:')
+        self.rebounds_label = ttk.Label(master, text='TRB:')
         self.rebounds_label.grid(row=4, column=1, padx=5, pady=5, sticky='w')
 
         self.assists_label = ttk.Label(master, text='AST:')
@@ -39,37 +49,36 @@ class NBAStatsGUI:
         self.reset_button.grid(row=6, column=0, columnspan=2, pady=10)
 
     def update_player_dropdown(self, *args):
+        """
+        Updates dropdown to the selected team.
+        """
         selected_team = self.team_abv.get()
-        self.player_dropdown['values'] = team_players.get(selected_team, [])
+        self.player_dropdown['values'] = self.team_players.get(selected_team, [])
         self.player_tag.set('')
         self.points_label.config(text='PTS:')
-        self.rebounds_label.config(text='RBS:')
+        self.rebounds_label.config(text='TRB:')
         self.assists_label.config(text='AST:')
 
     def display_stats(self, *args):
+        """
+        Updates stats variable labels.
+        """
         selected_team = self.team_abv.get()
         selected_player = self.player_tag.get()
-
-        try:
-            player_data = self.df[(self.df['Team'] == selected_team) & (self.df['Player'] == selected_player)]
-            if not player_data.empty:
-                points = player_data['PTS'].iloc[0]
-                rebounds = player_data['TRB'].iloc[0]
-                assists = player_data['AST'].iloc[0]
-
-                self.points_label.config(text=f'PTS: {points}')
-                self.rebounds_label.config(text=f'RBS: {rebounds}')
-                self.assists_label.config(text=f'AST: {assists}')
-            else:
-                self.points_label.config(text='PTS: Not Found')
-                self.rebounds_label.config(text='RBS: Not Found')
-                self.assists_label.config(text='AST: Not Found')
-        except (IndexError, KeyError):
-            self.points_label.config(text='PTS: Error')
-            self.rebounds_label.config(text='RBS: Error')
-            self.assists_label.config(text='AST: Error')
+        stats = get_stats(self.df, selected_team, selected_player)
+        if stats:
+            self.points_label.config(text=f'PTS: {stats["PTS"]}')
+            self.rebounds_label.config(text=f'TRB: {stats["TRB"]}')
+            self.assists_label.config(text=f'AST: {stats["AST"]}')
+        else:
+            self.points_label.config(text='PTS: Not Found')
+            self.rebounds_label.config(text='TRB: Not Found')
+            self.assists_label.config(text='AST: Not Found')
 
     def reset_gui(self):
+        """
+        Clears GUI
+        """
         self.team_abv.set('')
         self.player_tag.set('')
         self.player_dropdown['values'] = []

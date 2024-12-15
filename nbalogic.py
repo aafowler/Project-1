@@ -1,9 +1,9 @@
 import pandas as pd
 
-def get_data():
+def get_data() -> pd.DataFrame:
     """
 
-    Retrievesplayer stats from basketball-reference.com for the 2025 season,
+    Retrieves player stats from basketball-reference.com for the 2025 season,
     converts the data into a Pandas DataFrame, and saves it as a CSV file named 'nba_2025_stats.csv'.
 
     Returns:
@@ -14,7 +14,7 @@ def get_data():
     df.to_csv('nba_2025_stats.csv', index=False)
     return df
 
-def get_players(df):
+def get_players(df: pd.DataFrame) -> dict:
     """
     Creates a dictionary With teams as the key and players as the value.
 
@@ -36,7 +36,7 @@ def get_players(df):
             team_players[team].append(player)
     return team_players
 
-def get_stats(df, team, player):
+def get_stats(df: pd.DataFrame, team: str, player: str) -> dict | None:
     """
     Gets the points, rebounds, and assists of selected player.
 

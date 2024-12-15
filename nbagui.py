@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from nbalogic import get_data, get_players, get_stats
-import pandas as pd
+
 
 class NBAStatsGUI:
     """

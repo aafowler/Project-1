@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from typing import Dict, List, Tuple, Any
 from nbalogic import get_data, get_players, get_stats
 import pandas as pd
 
@@ -10,11 +11,11 @@ class NBAStatsGUI:
         Args:
             master (tk.Tk): Is the window of the app.
     """
-    def __init__(self, master):
+    def __init__(self, master: tk.Tk):
         self.master = master
-        self.df = get_data()
-        self.team_players = get_players(self.df)
-        self.team_players_sorted = sorted(self.team_players.keys())
+        self.df: pd.DataFrame = get_data()
+        self.team_players: Dict[str, List[str]] = get_players(self.df)
+        self.team_players_sorted: List[str] = sorted(self.team_players.keys())
 
         self.header_title = ttk.Label(master, text='NBA STATS', font=('Arial', 16))
         self.header_title.grid(row=0, column=0, columnspan=3, pady=10, padx=45, sticky='nw')
@@ -48,24 +49,24 @@ class NBAStatsGUI:
         self.reset_button = ttk.Button(master, text='Reset', command=self.reset_gui)
         self.reset_button.grid(row=6, column=0, columnspan=2, pady=10)
 
-    def update_player_dropdown(self, *args):
+    def update_player_dropdown(self, *args: Any):
         """
         Updates dropdown to the selected team.
         """
-        selected_team = self.team_abv.get()
+        selected_team: str = self.team_abv.get()
         self.player_dropdown['values'] = self.team_players.get(selected_team, [])
         self.player_tag.set('')
         self.points_label.config(text='PTS:')
         self.rebounds_label.config(text='TRB:')
         self.assists_label.config(text='AST:')
 
-    def display_stats(self, *args):
+    def display_stats(self, *args: Any):
         """
         Updates stats variable labels.
         """
-        selected_team = self.team_abv.get()
-        selected_player = self.player_tag.get()
-        stats = get_stats(self.df, selected_team, selected_player)
+        selected_team: str = self.team_abv.get()
+        selected_player: str = self.player_tag.get()
+        stats: Dict[str, Any] = get_stats(self.df, selected_team, selected_player)
         if stats:
             self.points_label.config(text=f'PTS: {stats["PTS"]}')
             self.rebounds_label.config(text=f'TRB: {stats["TRB"]}')
